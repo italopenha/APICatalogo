@@ -17,6 +17,19 @@ namespace APICatalogo.Controllers
             _context = context;
         }
 
+        // Rota: /produtos/primeiro
+        [HttpGet("primeiro")]
+        public ActionResult<Produto> GetPrimeiro()
+        {
+            var produto = _context.Produtos.FirstOrDefault();
+
+            if (produto is null)
+                return NotFound("Nenhum produto encontrado.");
+
+            return produto;
+        }
+
+        // Rota: /produtos
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
@@ -29,6 +42,7 @@ namespace APICatalogo.Controllers
             return produtos;
         }
 
+        // Rota: /produtos/id
         [HttpGet("{id:int}", Name="ObterProduto")]
         public ActionResult<Produto> Get(int id)
         {
@@ -40,6 +54,7 @@ namespace APICatalogo.Controllers
             return produto;
         }
 
+        // Rota: /produtos
         [HttpPost]
         public ActionResult Post(Produto produto)
         {
@@ -52,6 +67,7 @@ namespace APICatalogo.Controllers
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
 
+        // Rota: /produtos/id
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, Produto produto)
         {
@@ -64,6 +80,7 @@ namespace APICatalogo.Controllers
             return Ok(produto);
         }
 
+        // Rota: /produtos/id
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
