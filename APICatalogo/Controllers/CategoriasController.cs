@@ -30,8 +30,7 @@ public class CategoriasController : ControllerBase
     {
         try
         {
-            throw new DataMisalignedException();
-            //return _context.Categorias.AsNoTracking().ToList();
+            return _context.Categorias.AsNoTracking().ToList();
         }
         catch (Exception)
         {
