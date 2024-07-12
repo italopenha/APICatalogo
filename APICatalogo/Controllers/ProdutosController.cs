@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class ProdutosController : ControllerBase
     {
@@ -17,8 +17,10 @@ namespace APICatalogo.Controllers
             _context = context;
         }
 
-        // Rota: /produtos/primeiro
+        // Rota: /primeiro (Assim ignora o atributo definido em Route)
         [HttpGet("primeiro")]
+        [HttpGet("teste")]
+        [HttpGet("/primeiro")]
         public ActionResult<Produto> GetPrimeiro()
         {
             var produto = _context.Produtos.FirstOrDefault();
@@ -29,7 +31,7 @@ namespace APICatalogo.Controllers
             return produto;
         }
 
-        // Rota: /produtos
+        // Rota: api/produtos
         [HttpGet]
         public ActionResult<IEnumerable<Produto>> Get()
         {
@@ -42,10 +44,12 @@ namespace APICatalogo.Controllers
             return produtos;
         }
 
-        // Rota: /produtos/id
-        [HttpGet("{id:int}", Name="ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        // Rota: api/produtos/id
+        [HttpGet("{id:int}/{nome=Caderno}", Name="ObterProduto")]
+        public ActionResult<Produto> Get(int id, string nome)
         {
+            var parametro = nome;
+
             var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
 
             if (produto is null)
@@ -54,7 +58,7 @@ namespace APICatalogo.Controllers
             return produto;
         }
 
-        // Rota: /produtos
+        // Rota: api/produtos
         [HttpPost]
         public ActionResult Post(Produto produto)
         {
@@ -67,7 +71,7 @@ namespace APICatalogo.Controllers
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
 
-        // Rota: /produtos/id
+        // Rota: api/produtos/id
         [HttpPut("{id:int}")]
         public ActionResult Put(int id, Produto produto)
         {
@@ -80,7 +84,7 @@ namespace APICatalogo.Controllers
             return Ok(produto);
         }
 
-        // Rota: /produtos/id
+        // Rota: api/produtos/id
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
         {
