@@ -28,25 +28,43 @@ public class CategoriasController : ControllerBase
     [HttpGet]
     public ActionResult<IEnumerable<Categoria>> Get()
     {
-        return _context.Categorias.AsNoTracking().ToList();
+        try
+        {
+            throw new DataMisalignedException();
+            //return _context.Categorias.AsNoTracking().ToList();
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                "Ocorreu um problema ao tratar a sua solicitação");
+        }
+
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> Get(int id)
     {
-        var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
+        try
+        {
+            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
-        if (categoria is null)
-            return NotFound("Categoria não encontrada.");
+            if (categoria is null)
+                return NotFound($"Nenhuma categoria com id {id} foi encontrada.");
 
-        return Ok(categoria);
+            return Ok(categoria);
+        }
+        catch (Exception)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, 
+                "Ocorreu um problema ao tratar a sua solicitação");
+        }
     }
 
     [HttpPost]
     public ActionResult Post(Categoria categoria)
     {
         if (categoria is null)
-            return BadRequest();
+            return BadRequest("Dados inválidos");
 
         _context.Categorias.Add(categoria);
         _context.SaveChanges();
@@ -58,7 +76,7 @@ public class CategoriasController : ControllerBase
     public ActionResult Put(int id, Categoria categoria)
     {
         if (id != categoria.CategoriaId)
-            return BadRequest();    
+            return BadRequest("Dados inválidos");
 
         _context.Entry(categoria).State = EntityState.Modified;
         _context.SaveChanges();
@@ -72,7 +90,7 @@ public class CategoriasController : ControllerBase
         var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
 
         if (categoria is null)
-            return NotFound("Categoria não encontrada.");
+            return NotFound($"Nenhuma categoria com id {id} foi encontrada.");
 
         _context.Categorias.Remove(categoria);
         _context.SaveChanges();
