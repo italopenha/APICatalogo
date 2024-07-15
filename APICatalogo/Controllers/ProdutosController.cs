@@ -22,10 +22,9 @@ namespace APICatalogo.Controllers
         //[HttpGet("teste")]
         //[HttpGet("/primeiro")]
         [HttpGet("{valor:alpha:length(5)}")]
-        public ActionResult<Produto> GetPrimeiro(string valor)
+        public async Task<ActionResult<Produto>> GetPrimeiroAsync()
         {
-            var teste = valor;
-            var produto = _context.Produtos.FirstOrDefault();
+            var produto = await _context.Produtos.FirstOrDefaultAsync();
 
             if (produto is null)
                 return NotFound("Nenhum produto encontrado.");
@@ -35,10 +34,10 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public async Task<ActionResult<IEnumerable<Produto>>> GetAsync()
         {
             // Nunca retorne todos os registros em uma consulta
-            var produtos = _context.Produtos.Take(10).AsNoTracking().ToList();
+            var produtos = await _context.Produtos.Take(10).AsNoTracking().ToListAsync();
 
             if (produtos is null)
                 return NotFound("Nenhum produto encontrado.");
@@ -48,9 +47,9 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos/id
         [HttpGet("{id:int:min(1)}", Name="ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public async Task<ActionResult<Produto>> GetAsync(int id)
         {
-            var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
+            var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
 
             if (produto is null)
                 return NotFound("Produto não encontrado.");
@@ -60,41 +59,41 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos
         [HttpPost]
-        public ActionResult Post(Produto produto)
+        public async Task<ActionResult> PostAsync(Produto produto)
         {
             if (produto is null) 
                 return BadRequest();
 
-            _context.Produtos.Add(produto);
-            _context.SaveChanges();
+            await _context.Produtos.AddAsync(produto);
+            await _context.SaveChangesAsync();
 
             return new CreatedAtRouteResult("ObterProduto", new { id = produto.ProdutoId }, produto);
         }
 
         // Rota: api/produtos/id
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto)
+        public async Task<ActionResult> PutAsync(int id, Produto produto)
         {
             if (id != produto.ProdutoId)
                 return BadRequest();
 
             _context.Entry(produto).State = EntityState.Modified;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok(produto);
         }
 
         // Rota: api/produtos/id
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == id);
 
             if (produto is null)
                 return NotFound("Produto não encontrado.");
 
             _context.Produtos.Remove(produto);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok(produto);
         }
