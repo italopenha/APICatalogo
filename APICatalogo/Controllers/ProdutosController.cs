@@ -18,11 +18,13 @@ namespace APICatalogo.Controllers
         }
 
         // Rota: /primeiro (Assim ignora o atributo definido em Route)
-        [HttpGet("primeiro")]
-        [HttpGet("teste")]
-        [HttpGet("/primeiro")]
-        public ActionResult<Produto> GetPrimeiro()
+        //[HttpGet("primeiro")]
+        //[HttpGet("teste")]
+        //[HttpGet("/primeiro")]
+        [HttpGet("{valor:alpha:length(5)}")]
+        public ActionResult<Produto> GetPrimeiro(string valor)
         {
+            var teste = valor;
             var produto = _context.Produtos.FirstOrDefault();
 
             if (produto is null)
@@ -45,11 +47,9 @@ namespace APICatalogo.Controllers
         }
 
         // Rota: api/produtos/id
-        [HttpGet("{id:int}/{nome=Caderno}", Name="ObterProduto")]
-        public ActionResult<Produto> Get(int id, string nome)
+        [HttpGet("{id:int:min(1)}", Name="ObterProduto")]
+        public ActionResult<Produto> Get(int id)
         {
-            var parametro = nome;
-
             var produto = _context.Produtos.AsNoTracking().FirstOrDefault(p => p.ProdutoId == id);
 
             if (produto is null)
