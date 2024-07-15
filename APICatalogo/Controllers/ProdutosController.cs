@@ -2,6 +2,7 @@
 using APICatalogo.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers
@@ -46,8 +47,21 @@ namespace APICatalogo.Controllers
         }
 
         // Rota: api/produtos/id
-        [HttpGet("{id:int:min(1)}", Name="ObterProduto")]
-        public async Task<ActionResult<Produto>> GetAsync(int id)
+        //[HttpGet("{id:int:min(1)}", Name="ObterProduto")]
+        //public async Task<ActionResult<Produto>> GetAsync(int id, [BindRequired]string nome)
+        //{
+        //    var nomeProduto = nome;
+
+        //    var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
+
+        //    if (produto is null)
+        //        return NotFound("Produto não encontrado.");
+
+        //    return produto;
+        //}
+
+        [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
+        public async Task<ActionResult<Produto>> GetAsync([FromQuery] int id)
         {
             var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
 
