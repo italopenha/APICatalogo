@@ -8,17 +8,19 @@ using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers;
 
-[Route("[controller]")]
+[Route("api/[controller]")]
 [ApiController]
 public class CategoriasController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly ILogger _logger;
 
-    public CategoriasController(AppDbContext context, IConfiguration configuration)
+    public CategoriasController(AppDbContext context, IConfiguration configuration, ILogger<CategoriasController> logger)
     {
         _context = context;
         _configuration = configuration;
+        _logger = logger;
     }
 
     [HttpGet("LerArquivoConfiguracao")]
@@ -49,6 +51,8 @@ public class CategoriasController : ControllerBase
     public ActionResult<IEnumerable<Categoria>> GetCategoriasProdutos()
     {
         //return _context.Categorias.Include(p => p.Produtos).AsNoTracking().ToList();
+        _logger.LogInformation("=========== GET api/categorias/produtos ===========");
+
         // Nunca retorne objetos relacionados sem aplicar um filtro
         return _context.Categorias.Include(p => p.Produtos).Where(c => c.CategoriaId <= 5).AsNoTracking().ToList();
     }
@@ -59,6 +63,7 @@ public class CategoriasController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("=========== GET api/categorias ===========");
             return _context.Categorias.AsNoTracking().ToList();
         }
         catch (Exception)
@@ -72,21 +77,17 @@ public class CategoriasController : ControllerBase
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> Get(int id)
     {
-        //throw new Exception("Exceção ao retornar o produto pelo Id");
-        string[] teste = null;
-
-        if (teste.Length > 0)
-        {
-
-        }
-
         try
         {
             var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
 
-            if (categoria is null)
-                return NotFound($"Nenhuma categoria com id {id} foi encontrada.");
+            _logger.LogInformation($"=========== GET api/categorias/id = {id} ===========");
 
+            if (categoria is null)
+            {
+                _logger.LogInformation($"=========== GET api/categorias/id = {id} NOT FOUND ===========");
+                return NotFound();
+            }
             return Ok(categoria);
         }
         catch (Exception)
