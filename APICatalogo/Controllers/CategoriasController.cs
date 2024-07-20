@@ -70,6 +70,14 @@ public class CategoriasController : ControllerBase
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public ActionResult<Categoria> Get(int id)
     {
+        //throw new Exception("Exceção ao retornar o produto pelo Id");
+        string[] teste = null;
+
+        if (teste.Length > 0)
+        {
+
+        }
+
         try
         {
             var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
@@ -81,7 +89,7 @@ public class CategoriasController : ControllerBase
         }
         catch (Exception)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError, 
+            return StatusCode(StatusCodes.Status500InternalServerError,
                 "Ocorreu um problema ao tratar a sua solicitação");
         }
     }
