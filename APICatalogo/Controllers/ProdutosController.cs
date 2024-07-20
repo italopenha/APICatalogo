@@ -12,10 +12,12 @@ namespace APICatalogo.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger _logger;
 
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(AppDbContext context, ILogger<ProdutosController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         // Rota: /primeiro (Assim ignora o atributo definido em Route)
@@ -46,27 +48,16 @@ namespace APICatalogo.Controllers
             return produtos;
         }
 
-        // Rota: api/produtos/id
-        //[HttpGet("{id:int:min(1)}", Name="ObterProduto")]
-        //public async Task<ActionResult<Produto>> GetAsync(int id, [BindRequired]string nome)
-        //{
-        //    var nomeProduto = nome;
-
-        //    var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
-
-        //    if (produto is null)
-        //        return NotFound("Produto não encontrado.");
-
-        //    return produto;
-        //}
-
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public async Task<ActionResult<Produto>> GetAsync([FromQuery] int id)
         {
             var produto = await _context.Produtos.AsNoTracking().FirstOrDefaultAsync(p => p.ProdutoId == id);
 
             if (produto is null)
-                return NotFound("Produto não encontrado.");
+            {
+                _logger.LogWarning($"Produto com id= {id} não encontrado.");
+                return NotFound($"Produto com id= {id} não encontrado.");
+            }
 
             return produto;
         }
@@ -75,8 +66,11 @@ namespace APICatalogo.Controllers
         [HttpPost]
         public async Task<ActionResult> PostAsync(Produto produto)
         {
-            if (produto is null) 
-                return BadRequest();
+            if (produto is null)
+            {
+                _logger.LogWarning("Dados inválidos.");
+                return BadRequest("Dados inválidos.");
+            }
 
             await _context.Produtos.AddAsync(produto);
             await _context.SaveChangesAsync();
@@ -89,7 +83,10 @@ namespace APICatalogo.Controllers
         public async Task<ActionResult> PutAsync(int id, Produto produto)
         {
             if (id != produto.ProdutoId)
-                return BadRequest();
+            {
+                _logger.LogWarning("Dados inválidos.");
+                return BadRequest("Dados inválidos.");
+            }
 
             _context.Entry(produto).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -104,7 +101,10 @@ namespace APICatalogo.Controllers
             var produto = await _context.Produtos.FirstOrDefaultAsync(p => p.ProdutoId == id);
 
             if (produto is null)
-                return NotFound("Produto não encontrado.");
+            {
+                _logger.LogWarning($"Produto com id= {id} não encontrado.");
+                return NotFound($"Produto com id= {id} não encontrado.");
+            }
 
             _context.Produtos.Remove(produto);
             await _context.SaveChangesAsync();

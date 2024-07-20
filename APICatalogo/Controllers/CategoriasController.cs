@@ -4,6 +4,7 @@ using APICatalogo.Models;
 using APICatalogo.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace APICatalogo.Controllers;
@@ -58,79 +59,67 @@ public class CategoriasController : ControllerBase
     }
 
     [HttpGet]
-    [ServiceFilter(typeof(ApiLoggingFilter))]
-    public ActionResult<IEnumerable<Categoria>> Get()
+    public async Task<ActionResult<IEnumerable<Categoria>>> GetAsync()
     {
-        try
-        {
-            _logger.LogInformation("=========== GET api/categorias ===========");
-            return _context.Categorias.AsNoTracking().ToList();
-        }
-        catch (Exception)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                "Ocorreu um problema ao tratar a sua solicitação");
-        }
-
+        return await _context.Categorias.AsNoTracking().ToListAsync();
     }
 
     [HttpGet("{id:int}", Name = "ObterCategoria")]
-    public ActionResult<Categoria> Get(int id)
+    public async Task<ActionResult<Categoria>> GetAsync(int id)
     {
-        try
-        {
-            var categoria = _context.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
+        var categoria = await _context.Categorias.FirstOrDefaultAsync(c => c.CategoriaId == id);
 
-            _logger.LogInformation($"=========== GET api/categorias/id = {id} ===========");
-
-            if (categoria is null)
-            {
-                _logger.LogInformation($"=========== GET api/categorias/id = {id} NOT FOUND ===========");
-                return NotFound();
-            }
-            return Ok(categoria);
-        }
-        catch (Exception)
+        if (categoria is null)
         {
-            return StatusCode(StatusCodes.Status500InternalServerError,
-                "Ocorreu um problema ao tratar a sua solicitação");
+            _logger.LogWarning($"Categoria com id= {id} não encontrada.");
+            return NotFound($"Categoria com id= {id} não encontrada.");
         }
+        return Ok(categoria);
     }
 
     [HttpPost]
-    public ActionResult Post(Categoria categoria)
+    public async Task<ActionResult> PostAsync(Categoria categoria)
     {
         if (categoria is null)
-            return BadRequest("Dados inválidos");
+        {
+            _logger.LogWarning("Dados inválidos.");
+            return BadRequest("Dados inválidos.");
+        }
 
-        _context.Categorias.Add(categoria);
-        _context.SaveChanges();
+        await _context.Categorias.AddAsync(categoria);
+        await _context.SaveChangesAsync();
 
         return new CreatedAtRouteResult("ObterCategoria", new { id = categoria.CategoriaId }, categoria);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult Put(int id, Categoria categoria)
+    public async Task<ActionResult> PutAsync(int id, Categoria categoria)
     {
         if (id != categoria.CategoriaId)
-            return BadRequest("Dados inválidos");
+        {
+            _logger.LogWarning("Dados inválidos.");
+            return BadRequest("Dados inválidos.");
+        }
 
         _context.Entry(categoria).State = EntityState.Modified;
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return Ok(categoria);
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult<Categoria> Delete(int id)
+    public async Task<ActionResult<Categoria>> DeleteAsync(int id)
     {
-        var categoria = _context.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+        var categoria = await _context.Categorias.FirstOrDefaultAsync(c => c.CategoriaId == id);
 
         if (categoria is null)
-            return NotFound($"Nenhuma categoria com id {id} foi encontrada.");
+        {
+            _logger.LogWarning($"Categoria com id= {id} não encontrada.");
+            return NotFound($"Categoria com id= {id} não encontrada.");
+        }
 
         _context.Categorias.Remove(categoria);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return Ok(categoria);
     }
