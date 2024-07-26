@@ -2,15 +2,15 @@
 
 namespace APICatalogo.DTOs;
 
-public class CategoriaDTO
+public record CategoriaDTO
 {
-    public int CategoriaId { get; set; }
+    public int CategoriaId { get; init; }
 
     [Required]
     [StringLength(80)]
-    public string? Nome { get; set; }
+    public string? Nome { get; init; }
 
     [Required]
     [StringLength(300)]
-    public string? ImagemUrl { get; set; }
+    public string? ImagemUrl { get; init; }
 }
