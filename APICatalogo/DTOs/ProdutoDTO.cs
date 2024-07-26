@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace APICatalogo.DTOs;
 
-public class ProdutoDTO
+public record ProdutoDTO
 {
     public int ProdutoId { get; set; }
 

@@ -3,6 +3,7 @@ using APICatalogo.DTOs;
 using APICatalogo.Models;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -16,11 +17,13 @@ namespace APICatalogo.Controllers
     {
         private readonly IUnitOfWork _uof;
         private readonly ILogger _logger;
+        private readonly IMapper _mapper;
 
-        public ProdutosController(IUnitOfWork uof, ILogger<ProdutosController> logger)
+        public ProdutosController(IUnitOfWork uof, ILogger<ProdutosController> logger, IMapper mapper)
         {
             _uof = uof;
             _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpGet("produtos/{id}")]
@@ -31,7 +34,10 @@ namespace APICatalogo.Controllers
             if (produtos is null)
                 return NotFound();
 
-            return Ok(produtos);
+            // var destino = _mapper.Map<Destino>(origem);
+            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
+
+            return Ok(produtosDTO);
         }
 
         // Rota: api/produtos
@@ -44,7 +50,9 @@ namespace APICatalogo.Controllers
             if (produtos is null)
                 return NotFound("Nenhum produto encontrado.");
 
-            return Ok(produtos);
+            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
+
+            return Ok(produtosDTO);
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
@@ -58,7 +66,9 @@ namespace APICatalogo.Controllers
                 return NotFound($"Produto com id= {id} não encontrado.");
             }
 
-            return Ok(produto);
+            var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
+
+            return Ok(produtoDTO);
         }
 
         // Rota: api/produtos
@@ -71,10 +81,14 @@ namespace APICatalogo.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
+            var produto = _mapper.Map<Produto>(produtoDTO);
+
             var novoProduto = _uof.ProdutoRepository.Create(produto);
             _uof.Commit();
 
-            return new CreatedAtRouteResult("ObterProduto", new { id = novoProduto.ProdutoId }, novoProduto);
+            var novoProdutoDTO = _mapper.Map<ProdutoDTO>(novoProduto);
+
+            return new CreatedAtRouteResult("ObterProduto", new { id = novoProdutoDTO.ProdutoId }, novoProdutoDTO);
         }
 
         // Rota: api/produtos/id
@@ -87,10 +101,14 @@ namespace APICatalogo.Controllers
                 return BadRequest("Dados inválidos.");
             }
 
+            var produto = _mapper.Map<Produto>(produtoDTO);
+
             var produtoAtualizado = _uof.ProdutoRepository.Update(produto);
             _uof.Commit();
 
-            return Ok(produtoAtualizado);
+            var produtoAtualizadoDTO = _mapper.Map<ProdutoDTO>(produtoAtualizado);
+
+            return Ok(produtoAtualizadoDTO);
         }
 
         // Rota: api/produtos/id
@@ -105,7 +123,9 @@ namespace APICatalogo.Controllers
             var produtoDeletado = _uof.ProdutoRepository.Delete(produto);
             _uof.Commit();
 
-            return Ok(produtoDeletado);
+            var produtoDeletadoDTO = _mapper.Map<ProdutoDTO>(produtoDeletado);
+
+            return Ok(produtoDeletadoDTO);
         }
     }
 }
