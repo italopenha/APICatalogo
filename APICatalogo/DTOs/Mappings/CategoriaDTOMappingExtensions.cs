@@ -39,6 +39,6 @@ public static class CategoriaDTOMappingExtensions
             CategoriaId = categoria.CategoriaId,
             Nome = categoria.Nome,
             ImagemUrl = categoria.ImagemUrl
-        }).ToList();
+        });
     }
 }
