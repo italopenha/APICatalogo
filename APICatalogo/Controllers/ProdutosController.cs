@@ -1,4 +1,5 @@
 ﻿using APICatalogo.Context;
+using APICatalogo.DTOs;
 using APICatalogo.Models;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Interfaces;
@@ -23,7 +24,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("produtos/{id}")]
-        public ActionResult <IEnumerable<Produto>> GetProdutosPorCategoria(int id)
+        public ActionResult <IEnumerable<ProdutoDTO>> GetProdutosPorCategoria(int id)
         {
             var produtos = _uof.ProdutoRepository.GetProdutosPorCategoria(id);
 
@@ -35,7 +36,7 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos
         [HttpGet]
-        public ActionResult<IEnumerable<Produto>> Get()
+        public ActionResult<IEnumerable<ProdutoDTO>> Get()
         {
             // Nunca retorne todos os registros em uma consulta
             var produtos = _uof.ProdutoRepository.GetAll().ToList();
@@ -47,7 +48,7 @@ namespace APICatalogo.Controllers
         }
 
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
-        public ActionResult<Produto> Get(int id)
+        public ActionResult<ProdutoDTO> Get(int id)
         {
             var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
 
@@ -62,9 +63,9 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos
         [HttpPost]
-        public ActionResult Post(Produto produto)
+        public ActionResult<ProdutoDTO> Post(ProdutoDTO produtoDTO)
         {
-            if (produto is null)
+            if (produtoDTO is null)
             {
                 _logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
@@ -78,9 +79,9 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos/id
         [HttpPut("{id:int}")]
-        public ActionResult Put(int id, Produto produto)
+        public ActionResult<ProdutoDTO> Put(int id, ProdutoDTO produtoDTO)
         {
-            if (id != produto.ProdutoId)
+            if (id != produtoDTO.ProdutoId)
             {
                 _logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
@@ -94,7 +95,7 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos/id
         [HttpDelete("{id:int}")]
-        public ActionResult Delete(int id)
+        public ActionResult<ProdutoDTO> Delete(int id)
         {
             var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
 
