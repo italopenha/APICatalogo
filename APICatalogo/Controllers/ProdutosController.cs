@@ -5,9 +5,11 @@ using APICatalogo.Repositories;
 using APICatalogo.Repositories.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace APICatalogo.Controllers
 {
@@ -111,6 +113,48 @@ namespace APICatalogo.Controllers
             return Ok(produtoAtualizadoDTO);
         }
 
+        [HttpPatch("{id}/UpdatePartial")]
+        public ActionResult<ProdutoDTOUpdateResponse> Patch(int id,
+            JsonPatchDocument<ProdutoDTOUpdateRequest> patchProdutoDTO)
+        {
+            if (patchProdutoDTO is null || id <= 0)
+                return BadRequest();
+
+            var produto = _uof.ProdutoRepository.Get(p => p.ProdutoId == id);
+
+            if (produto is null)
+                return NotFound();
+
+            var produtoUpdateRequest = _mapper.Map<ProdutoDTOUpdateRequest>(produto);
+
+            if (produtoUpdateRequest is null)
+                return BadRequest("Ocorreu um erro ao mapear o produto.");
+
+            patchProdutoDTO.ApplyTo(produtoUpdateRequest, ModelState);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var validationResults = ValidateChangeFields(patchProdutoDTO, produtoUpdateRequest);
+
+            if (validationResults.Any())
+            {
+                foreach (var validationResult in validationResults )
+                {
+                    ModelState.AddModelError(validationResult.MemberNames.First(), validationResult.ErrorMessage);
+                }
+
+                return BadRequest(ModelState);
+            }
+
+            _mapper.Map(produtoUpdateRequest, produto);
+
+            _uof.ProdutoRepository.Update(produto);
+            _uof.Commit();
+
+            return Ok(_mapper.Map<ProdutoDTOUpdateResponse>(produto));
+        }
+
         // Rota: api/produtos/id
         [HttpDelete("{id:int}")]
         public ActionResult<ProdutoDTO> Delete(int id)
@@ -126,6 +170,34 @@ namespace APICatalogo.Controllers
             var produtoDeletadoDTO = _mapper.Map<ProdutoDTO>(produtoDeletado);
 
             return Ok(produtoDeletadoDTO);
+        }
+
+        private List<ValidationResult> ValidateChangeFields(JsonPatchDocument<ProdutoDTOUpdateRequest> patchDoc, ProdutoDTOUpdateRequest produtoUpdateRequest)
+        {
+            var validationResults = new List<ValidationResult>();
+
+            foreach (var operation in patchDoc.Operations)
+            {
+                if (operation.path.Equals("/estoque", StringComparison.OrdinalIgnoreCase))
+                {
+                    var context = new ValidationContext(produtoUpdateRequest) { MemberName = nameof(produtoUpdateRequest.Estoque) };
+
+                    Validator.TryValidateProperty(produtoUpdateRequest.Estoque, context, validationResults);
+                }
+                else if (operation.path.Equals("/datacadastro", StringComparison.OrdinalIgnoreCase))
+                {
+                    var context = new ValidationContext(produtoUpdateRequest) { MemberName = nameof(produtoUpdateRequest.DataCadastro) };
+
+                    Validator.TryValidateProperty(produtoUpdateRequest.DataCadastro, context, validationResults);
+
+                    if (produtoUpdateRequest.DataCadastro.Date <= DateTime.Now.Date)
+                    {
+                        validationResults.Add(new ValidationResult("A data deve ser maior ou igual a data atual.", new[] { nameof(produtoUpdateRequest.DataCadastro) }));
+                    }
+                }
+            }
+
+            return validationResults;
         }
     }
 }
