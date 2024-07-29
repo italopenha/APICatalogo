@@ -1,6 +1,7 @@
 ﻿using APICatalogo.Context;
 using APICatalogo.DTOs;
 using APICatalogo.Models;
+using APICatalogo.Pagination;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Interfaces;
 using AutoMapper;
@@ -37,6 +38,16 @@ namespace APICatalogo.Controllers
                 return NotFound();
 
             // var destino = _mapper.Map<Destino>(origem);
+            var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
+
+            return Ok(produtosDTO);
+        }
+
+        [HttpGet("pagination")]
+        public ActionResult<IEnumerable<ProdutoDTO>> Get([FromQuery] ProdutosParameters produtosParameters)
+        {
+            var produtos = _uof.ProdutoRepository.GetProdutos(produtosParameters);
+
             var produtosDTO = _mapper.Map<IEnumerable<ProdutoDTO>>(produtos);
 
             return Ok(produtosDTO);
