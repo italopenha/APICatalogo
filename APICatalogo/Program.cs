@@ -27,6 +27,9 @@ builder.Services.AddControllers(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+
 string mySqlConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 
 var valor1 = builder.Configuration["chave1"];
