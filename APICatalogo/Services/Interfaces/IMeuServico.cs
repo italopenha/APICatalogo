@@ -1,4 +1,4 @@
-﻿namespace APICatalogo.Services
+﻿namespace APICatalogo.Services.Interfaces
 {
     public interface IMeuServico
     {

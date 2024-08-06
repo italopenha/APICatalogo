@@ -5,7 +5,7 @@ using APICatalogo.Filters;
 using APICatalogo.Models;
 using APICatalogo.Pagination;
 using APICatalogo.Repositories.Interfaces;
-using APICatalogo.Services;
+using APICatalogo.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
