@@ -5,6 +5,7 @@ using APICatalogo.Pagination;
 using APICatalogo.Repositories;
 using APICatalogo.Repositories.Interfaces;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -81,6 +82,7 @@ namespace APICatalogo.Controllers
 
         // Rota: api/produtos
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetAsync()
         {
             // Nunca retorne todos os registros em uma consulta
