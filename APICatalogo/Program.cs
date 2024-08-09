@@ -96,6 +96,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("Admin").RequireRole("id", "italo"));
+    options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
+    options.AddPolicy("ExclusivePolicyOnly", policy =>
+        policy.RequireAssertion(context =>
+        context.User.HasClaim(claim => claim.Type == "id" && claim.Value == "italo") || context.User.IsInRole("SuperAdmin")));
+});
+
 builder.Services.AddTransient<IMeuServico, MeuServico>();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
