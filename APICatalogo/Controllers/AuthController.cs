@@ -58,6 +58,36 @@ namespace APICatalogo.Controllers
         }
 
         [HttpPost]
+        [Route("AddUserToRole")]
+        public async Task<IActionResult> AddUserToRole(string email, string roleName)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var result = await _userManager.AddToRoleAsync(user, roleName);
+
+                if (result.Succeeded)
+                {
+                    _logger.LogInformation(1, $"User {user.Email} added to the {roleName} role");
+                    return StatusCode(StatusCodes.Status200OK,
+                        new ResponseDTO { Status = "Success", Message = $"User {user.Email} added to the {roleName} role" });
+                }
+                else
+                {
+                    _logger.LogInformation(1, $"Error: Unable to add user {user.Email} to the {roleName} role");
+                    return StatusCode(StatusCodes.Status400BadRequest, new ResponseDTO
+                    {
+                        Status = "Error",
+                        Message = $"Error: Unable to add user {user.Email} to the {roleName} role"
+                    });
+                }
+            }
+
+            return BadRequest(new { Error = "Unable to find user" });
+        }
+
+        [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModelDTO loginModel)
         {
