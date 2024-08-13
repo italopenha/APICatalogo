@@ -99,7 +99,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("Admin").RequireRole("id", "italo"));
+    options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("Admin").RequireClaim("id", "italo"));
     options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
     options.AddPolicy("ExclusivePolicyOnly", policy =>
         policy.RequireAssertion(context =>
