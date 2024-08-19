@@ -30,14 +30,14 @@ builder.Services.AddControllers(options =>
     options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 }).AddNewtonsoftJson();
 
-var OrigensComAcessoPermitido = "_origensComAcessoPermitido";
-
 builder.Services.AddCors(options =>
-    options.AddPolicy(name: OrigensComAcessoPermitido,
-    policy =>
-    {
-        policy.WithOrigins("https://apirequest.io");
-    })
+    options.AddPolicy("OrigensComAcessoPermitido",
+        policy =>
+        {
+            policy.WithOrigins("https://localhost.xxxx")
+                .WithMethods("GET", "POST")
+                .AllowAnyHeader();
+        })
 );
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -149,7 +149,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseCors(OrigensComAcessoPermitido);
+app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
