@@ -11,6 +11,7 @@ using APICatalogo.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -116,6 +117,17 @@ builder.Services.AddAuthorization(options =>
         context.User.HasClaim(claim => claim.Type == "id" && claim.Value == "italo") || context.User.IsInRole("SuperAdmin")));
 });
 
+builder.Services.AddRateLimiter(rateLimiterOptions =>
+{
+    rateLimiterOptions.AddFixedWindowLimiter(policyName: "fixedwindow", options =>
+    {
+        options.PermitLimit = 1;
+        options.Window = TimeSpan.FromSeconds(5);
+        options.QueueLimit = 0;
+    });
+    rateLimiterOptions.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 builder.Services.AddTransient<IMeuServico, MeuServico>();
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
@@ -149,6 +161,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseRateLimiter();
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
