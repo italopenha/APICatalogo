@@ -9,6 +9,7 @@ using APICatalogo.Repositories;
 using APICatalogo.Repositories.Interfaces;
 using APICatalogo.Services;
 using APICatalogo.Services.Interfaces;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -150,6 +151,17 @@ builder.Services.AddRateLimiter(options =>
                                     QueueLimit = 0,
                                     Window = TimeSpan.FromSeconds(10)
                                 }));
+});
+
+builder.Services.AddApiVersioning(o =>
+{
+    o.DefaultApiVersion = new ApiVersion(1, 0);
+    o.AssumeDefaultVersionWhenUnspecified = true;
+    o.ReportApiVersions = true;
+}).AddApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
 
 builder.Services.AddTransient<IMeuServico, MeuServico>();
