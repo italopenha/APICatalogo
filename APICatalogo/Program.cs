@@ -50,8 +50,21 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "apicatalogo",
-        Version = "v1"
+        Version = "v1",
+        Title = "APICatalogo",
+        Description = "Catálogo de Produtos e Categorias",
+        TermsOfService = new Uri("https://macoratti.net/terms"),
+        Contact = new OpenApiContact
+        {
+            Name = "italo",
+            Email = "italopenha77@outlook.com",
+            Url = new Uri("https://github.com/italopenha"),
+        },
+        License = new OpenApiLicense
+        {
+            Name = "Usar sobre LICX",
+            Url = new Uri("https://github.com/italopenha"),
+        }
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
@@ -193,7 +206,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "APICatalogo");
+    });
     app.ConfigureExceptionHandler();
 }
 
