@@ -90,6 +90,11 @@ namespace APICatalogo.Controllers
             return BadRequest(new { Error = "Unable to find user" });
         }
 
+        /// <summary>
+        /// Verifica as credenciais de um usuário
+        /// </summary>
+        /// <param name="loginModel">Um objeto do tipo UsuarioDTO</param>
+        /// <returns>Retorna o Status 200 e o token</returns>
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModelDTO loginModel)
@@ -136,6 +141,12 @@ namespace APICatalogo.Controllers
             return Unauthorized();
         }
 
+        /// <summary>
+        /// Registra um novo usuário
+        /// </summary>
+        /// <param name="registerModel">Um novo UsuarioDTO</param>
+        /// <returns>Status 200</returns>
+        /// <remarks>Retorna o Status 200</remarks>
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModelDTO registerModel)

@@ -92,9 +92,12 @@ public class CategoriasController : ControllerBase
         var categoriasFiltradas = await _uof.CategoriaRepository.GetCategoriasFiltroNomeAsync(categoriasFiltro);
         return ObterCategorias(categoriasFiltradas);
     }
-
+    
+    /// <summary>
+    /// Obtém uma lista de objetos Categoria
+    /// </summary>
+    /// <returns>Uma lista de objetos Categoria</returns>
     [HttpGet]
-    //[Authorize]
     [DisableRateLimiting]
     public async Task<ActionResult<IEnumerable<CategoriaDTO>>> GetAsync()
     {
@@ -108,7 +111,11 @@ public class CategoriasController : ControllerBase
         return Ok(categoriasDTO);
     }
 
-    [DisableCors]
+    /// <summary>
+    /// Obtém uma Categoria pelo Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns>Objetos Categoria</returns>
     [HttpGet("{id:int}", Name = "ObterCategoria")]
     public async Task<ActionResult<CategoriaDTO>> GetAsync(int id)
     {
@@ -125,6 +132,22 @@ public class CategoriasController : ControllerBase
         return Ok(categoriaDTO);
     }
 
+    /// <summary>
+    /// Inclui uma nova Categoria
+    /// </summary>
+    /// <remarks>
+    /// Exemplo de request:
+    /// 
+    ///     POST /categorias
+    ///     {
+    ///         "categoriaId": 1,
+    ///         "nome": "categoria1",
+    ///         "imagemUrl": "http://teste.net/1.jpg"
+    ///     }
+    /// </remarks>
+    /// <param name="categoriaDTO">objeto Categoria</param>
+    /// <returns>O objeto Categoria incluído</returns>
+    /// <remarks>Retorna um objeto Categoria incluído</remarks>
     [HttpPost]
     public async Task<ActionResult<CategoriaDTO>> PostAsync(CategoriaDTO categoriaDTO)
     {

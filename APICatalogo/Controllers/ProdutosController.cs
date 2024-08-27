@@ -81,6 +81,10 @@ namespace APICatalogo.Controllers
             return Ok(produtosDTO);
         }
 
+        /// <summary>
+        /// Exibe uma relação dos produtos
+        /// </summary>
+        /// <returns>Retorna uma lista de objetos Produto</returns>
         // Rota: api/produtos
         [HttpGet]
         [Authorize(Policy = "UserOnly")]
@@ -97,6 +101,11 @@ namespace APICatalogo.Controllers
             return Ok(produtosDTO);
         }
 
+        /// <summary>
+        /// Obtém um produto pelo seu identificador produtoId
+        /// </summary>
+        /// <param name="id">Código do produto</param>
+        /// <returns>Um objeto produto</returns>
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
         public async Task<ActionResult<ProdutoDTO>> GetAsync(int id)
         {
