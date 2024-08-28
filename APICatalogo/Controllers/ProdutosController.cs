@@ -106,14 +106,15 @@ namespace APICatalogo.Controllers
         /// <param name="id">Código do produto</param>
         /// <returns>Um objeto produto</returns>
         [HttpGet("{id:int:min(1)}", Name = "ObterProduto")]
-        public async Task<ActionResult<ProdutoDTO>> GetAsync(int id)
+        public async Task<ActionResult<ProdutoDTO>> GetAsync(int? id)
         {
+            if (id == null || id <= 0)
+                return BadRequest("Id inválido.");
+
             var produto = await _uof.ProdutoRepository.GetAsync(p => p.ProdutoId == id);
 
             if (produto is null)
-            {
                 return NotFound($"Produto com id= {id} não encontrado.");
-            }
 
             var produtoDTO = _mapper.Map<ProdutoDTO>(produto);
 
