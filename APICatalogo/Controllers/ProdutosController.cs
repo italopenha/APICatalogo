@@ -24,22 +24,12 @@ namespace APICatalogo.Controllers
     public class ProdutosController : ControllerBase
     {
         private readonly IUnitOfWork _uof;
-        private readonly ILogger _logger;
         private readonly IMapper _mapper;
-        private IUnitOfWork repository;
-        private IMapper mapper;
 
-        public ProdutosController(IUnitOfWork uof, ILogger<ProdutosController> logger, IMapper mapper)
+        public ProdutosController(IUnitOfWork uof, IMapper mapper)
         {
             _uof = uof;
-            _logger = logger;
             _mapper = mapper;
-        }
-
-        public ProdutosController(IUnitOfWork repository, IMapper mapper)
-        {
-            this.repository = repository;
-            this.mapper = mapper;
         }
 
         [HttpGet("produtos/{id}")]
@@ -122,7 +112,6 @@ namespace APICatalogo.Controllers
 
             if (produto is null)
             {
-                _logger.LogWarning($"Produto com id= {id} não encontrado.");
                 return NotFound($"Produto com id= {id} não encontrado.");
             }
 
@@ -137,7 +126,6 @@ namespace APICatalogo.Controllers
         {
             if (produtoDTO is null)
             {
-                _logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
@@ -157,7 +145,6 @@ namespace APICatalogo.Controllers
         {
             if (id != produtoDTO.ProdutoId)
             {
-                _logger.LogWarning("Dados inválidos.");
                 return BadRequest("Dados inválidos.");
             }
 
