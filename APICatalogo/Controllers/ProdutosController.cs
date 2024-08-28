@@ -26,12 +26,20 @@ namespace APICatalogo.Controllers
         private readonly IUnitOfWork _uof;
         private readonly ILogger _logger;
         private readonly IMapper _mapper;
+        private IUnitOfWork repository;
+        private IMapper mapper;
 
         public ProdutosController(IUnitOfWork uof, ILogger<ProdutosController> logger, IMapper mapper)
         {
             _uof = uof;
             _logger = logger;
             _mapper = mapper;
+        }
+
+        public ProdutosController(IUnitOfWork repository, IMapper mapper)
+        {
+            this.repository = repository;
+            this.mapper = mapper;
         }
 
         [HttpGet("produtos/{id}")]
