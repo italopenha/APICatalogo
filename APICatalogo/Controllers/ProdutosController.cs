@@ -86,7 +86,7 @@ namespace APICatalogo.Controllers
         /// <returns>Retorna uma lista de objetos Produto</returns>
         // Rota: api/produtos
         [HttpGet]
-        [Authorize(Policy = "UserOnly")]
+        //[Authorize(Policy = "UserOnly")]
         public async Task<ActionResult<IEnumerable<ProdutoDTO>>> GetAsync()
         {
             // Nunca retorne todos os registros em uma consulta

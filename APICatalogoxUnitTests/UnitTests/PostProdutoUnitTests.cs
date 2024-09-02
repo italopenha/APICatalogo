@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace APICatalogoxUnitTests.UnitTests;
 
-public class PostProdutoUnitTestes : IClassFixture<ProdutosUnitTestController>
+public class PostProdutoUnitTests : IClassFixture<ProdutosUnitTestController>
 {
     private readonly ProdutosController _controller;
 
-    public PostProdutoUnitTestes(ProdutosUnitTestController controller)
+    public PostProdutoUnitTests(ProdutosUnitTestController controller)
     {
         _controller = new ProdutosController(controller.repository, controller.mapper);
     }
